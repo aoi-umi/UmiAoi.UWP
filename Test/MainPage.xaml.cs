@@ -22,9 +22,13 @@ namespace Test
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        Object str1 = null;
+        string str2 = "str2";
+        string str11 => str1.ToString();
         public MainPage()
         {
             this.InitializeComponent();
+            Button b = str1 as Button;
         }
     }
 }
