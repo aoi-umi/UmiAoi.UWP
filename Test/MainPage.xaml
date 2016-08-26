@@ -14,10 +14,10 @@
         <StackPanel>
             <uaCrl:GifView UriSource="ms-appx:///Images/sample.gif" Stretch="None"/>
             <ListBox>
-                <ListBoxItem>
-                    <Button Width="100" Content="bbb">
+                <ListBoxItem HorizontalContentAlignment="Stretch">
+                    <Button Content="aaa" HorizontalAlignment="Stretch">
                         <Interactivity:Interaction.Behaviors>
-                            <uaBeh:FocusScaleBehavior/>
+                            <uaBeh:FocusBehavior/>
                         </Interactivity:Interaction.Behaviors>
                     </Button>
                 </ListBoxItem>
@@ -36,6 +36,34 @@
                     </Button>
                 </Canvas>
             </Border>
+            <Button HorizontalAlignment="Stretch">aaa</Button>
+            <GridView>
+                <Button Content="b">
+                    <Interactivity:Interaction.Behaviors>
+                        <uaBeh:FocusBehavior TransformType="Center" From="0" To="100"/>
+                    </Interactivity:Interaction.Behaviors>
+                </Button>
+                <Button Content="b">
+                    <Interactivity:Interaction.Behaviors>
+                        <uaBeh:FocusBehavior TransformType="Rotation" From="0" To="360"/>
+                    </Interactivity:Interaction.Behaviors>
+                </Button>
+                <Button Content="b">
+                    <Interactivity:Interaction.Behaviors>
+                        <uaBeh:FocusBehavior TransformType="Scale" From="1" To="1.5"/>
+                    </Interactivity:Interaction.Behaviors>
+                </Button>
+                <Button Content="b">
+                    <Interactivity:Interaction.Behaviors>
+                        <uaBeh:FocusBehavior TransformType="Skew" From="0" To="25"/>
+                    </Interactivity:Interaction.Behaviors>
+                </Button>
+                <Button Content="b">
+                    <Interactivity:Interaction.Behaviors>
+                        <uaBeh:FocusBehavior TransformType="Translate" From="0" To="20"/>
+                    </Interactivity:Interaction.Behaviors>
+                </Button>
+            </GridView>
         </StackPanel>
     </Grid>
 </Page>

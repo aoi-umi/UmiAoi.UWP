@@ -108,7 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Behaviors\DragBehavior.cs" />
-    <Compile Include="Behaviors\FocusScaleBehavior.cs" />
+    <Compile Include="Behaviors\FocusBehavior.cs" />
     <Compile Include="Controls\GifView.xaml.cs">
       <DependentUpon>GifView.xaml</DependentUpon>
     </Compile>
