@@ -11,6 +11,10 @@
     x:Class="Test.MainPage" 
     mc:Ignorable="d">
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="20"></RowDefinition>
+        </Grid.RowDefinitions>
         <StackPanel>
             <uaCrl:GifView UriSource="ms-appx:///Images/sample.gif" Stretch="None"/>
             <ListBox>
@@ -64,6 +68,22 @@
                     </Interactivity:Interaction.Behaviors>
                 </Button>
             </GridView>
+            <GridView>
+                <ComboBox Name="cb">
+                    <ComboBoxItem>TryEnterFullScreen</ComboBoxItem>
+                    <ComboBoxItem>Auto</ComboBoxItem>
+                    <ComboBoxItem>FullScreen</ComboBoxItem>
+                    <ComboBoxItem>PreferredLaunchViewSize</ComboBoxItem>
+                    <ComboBoxItem>Minimal</ComboBoxItem>
+                    <ComboBoxItem>Standard</ComboBoxItem>
+                </ComboBox>
+                <Button Click="EnterFullScreen_Click">full screen</Button>
+                <Button Click="ExitFullScreen_Click">exit full screen</Button>
+            </GridView>
         </StackPanel>
+        <Button Grid.Row="1" 
+                Background="{StaticResource SystemControlHighlightAltListAccentLowBrush}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"></Button>
     </Grid>
 </Page>

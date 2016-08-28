@@ -5,6 +5,8 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -22,13 +24,52 @@ namespace Test
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        Object str1 = null;
-        string str2 = "str2";
-        string str11 => str1.ToString();
         public MainPage()
         {
             this.InitializeComponent();
-            Button b = str1 as Button;
+            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                StatusBar statusBar = StatusBar.GetForCurrentView();
+                statusBar.ForegroundColor = Colors.White;
+                statusBar.BackgroundColor = Colors.Black;
+                statusBar.BackgroundOpacity = 1;
+            }
+        }
+
+        ApplicationView view = ApplicationView.GetForCurrentView();
+        private void EnterFullScreen_Click(object sender, RoutedEventArgs e)
+        {
+            bool isInFullScreenMode = view.IsFullScreenMode;
+            switch (cb.SelectedIndex)
+            {
+                case 0:
+                    view.TryEnterFullScreenMode();
+                    break;
+                case 1:
+                    ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
+                    break;
+                case 2:
+                    ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
+                    break;
+                case 3:
+                    ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+                    break;
+                case 4:
+                    // 在全屏状态下，是否显示系统 UI，比如标题栏和任务栏
+                    view.FullScreenSystemOverlayMode = FullScreenSystemOverlayMode.Minimal;
+                    view.ShowStandardSystemOverlays();
+                    break;
+                case 5:
+                    // 在全屏状态下，是否显示系统 UI，比如标题栏和任务栏
+                    view.FullScreenSystemOverlayMode = FullScreenSystemOverlayMode.Standard;
+                    view.ShowStandardSystemOverlays();
+                    break;
+            }
+        }
+
+        private void ExitFullScreen_Click(object sender, RoutedEventArgs e)
+        {
+            view.ExitFullScreenMode();
         }
     }
 }
