@@ -60,6 +60,7 @@ namespace UmiAoi.UWP.Behaviors
         private readonly DoubleAnimation _YAnim = new DoubleAnimation();
         public void Attach(DependencyObject associatedObject)
         {
+            if (From == To || DurationMilliseconds == 0) return;
             _associatedObject = associatedObject;
             var element = _associatedObject as FrameworkElement;
             if (element == null) return;
@@ -118,18 +119,19 @@ namespace UmiAoi.UWP.Behaviors
         {
             if (!IsBusy)
             {
-                StartScaleStoryboard(From, To);
+                StartStoryboard(From, To);
                 IsBusy = true;
             }
         }
 
         private void Element_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            StartScaleStoryboard(To, From);
+            StartStoryboard(To, From);
         }
 
-        private void StartScaleStoryboard(double from, double to)
+        private void StartStoryboard(double from, double to)
         {
+            _storyboard.Stop();
             _YAnim.From = _XAnim.From = from;
             _YAnim.To = _XAnim.To = to;
             _storyboard.Begin();
