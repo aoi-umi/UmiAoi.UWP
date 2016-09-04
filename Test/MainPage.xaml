@@ -80,6 +80,31 @@
                 <Button Click="EnterFullScreen_Click">full screen</Button>
                 <Button Click="ExitFullScreen_Click">exit full screen</Button>
             </GridView>
+            <Grid>
+            <ScrollViewer Name="sv" 
+                          Height="20" 
+                          HorizontalScrollBarVisibility="Disabled"
+                          HorizontalScrollMode="Disabled"
+                          VerticalScrollBarVisibility="Hidden"
+                          VerticalScrollMode="Disabled">
+            <RichTextBlock Name="rtb" 
+                           TextWrapping="Wrap" 
+                           IsTextSelectionEnabled="True">
+                    <Paragraph>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbb
+                    </Paragraph>
+                <Paragraph>aaaaaaaaaaaaa1</Paragraph>
+                <Paragraph>aaaaaaaaaaaaa2</Paragraph>
+                <Paragraph>aaaaaaaaaaaaa3</Paragraph>
+                </RichTextBlock>
+            </ScrollViewer>
+                <Grid Name="rectGrid" Background="White">
+                    <Image IsHitTestVisible="False" Name="rect" Height="{Binding ActualHeight, ElementName=sv}"></Image>
+                </Grid>
+            </Grid>
+            <GridView>
+                <Button Click="PrevPage_Click">上一页</Button>
+                <Button Click="NextPage_Click">下一页</Button>
+            </GridView>
         </StackPanel>
         <Button Grid.Row="1" 
                 Background="{StaticResource SystemControlHighlightAltListAccentLowBrush}"
