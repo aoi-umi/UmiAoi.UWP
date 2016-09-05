@@ -14,6 +14,7 @@
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel>
             <uaCtr:GifView UriSource="ms-appx:///Images/sample.gif" Stretch="None"/>

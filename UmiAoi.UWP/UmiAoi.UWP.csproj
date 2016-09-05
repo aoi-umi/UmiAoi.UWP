@@ -107,6 +107,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adorners\SimpleDecorator.cs" />
     <Compile Include="Behaviors\DragBehavior.cs" />
     <Compile Include="Behaviors\FocusBehavior.cs" />
     <Compile Include="Behaviors\MyAction.cs" />
@@ -138,6 +139,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
