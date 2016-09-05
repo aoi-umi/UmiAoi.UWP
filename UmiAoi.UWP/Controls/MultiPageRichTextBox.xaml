@@ -8,8 +8,24 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-
     <Grid>
-
+        <ScrollViewer 
+            Name="sv"
+            HorizontalScrollBarVisibility="Disabled"
+            HorizontalScrollMode="Disabled"
+            VerticalScrollBarVisibility="Hidden"
+            VerticalScrollMode="Disabled"
+            Background="White">
+            <RichTextBlock
+                Name="rtb" 
+                TextWrapping="Wrap" 
+                IsTextSelectionEnabled="True">
+            </RichTextBlock>
+        </ScrollViewer>
+        <Image 
+            IsHitTestVisible="False" 
+            Name="img" 
+            Visibility="Collapsed" 
+            Height="{Binding ActualHeight, ElementName=sv}"></Image>
     </Grid>
 </UserControl>

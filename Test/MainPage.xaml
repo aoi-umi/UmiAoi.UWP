@@ -106,6 +106,7 @@
                 <Button Click="PrevPage_Click">上一页</Button>
                 <Button Click="NextPage_Click">下一页</Button>
             </GridView>
+            <uaCtr:MultiPageRichTextBox Height="20"/>
         </StackPanel>
         <Button Grid.Row="1" 
                 Background="{StaticResource SystemControlHighlightAltListAccentLowBrush}"
