@@ -120,6 +120,7 @@
     <Compile Include="Controls\MultiPageRichTextBox.xaml.cs">
       <DependentUpon>MultiPageRichTextBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\UmiAoi.UWP.rd.xml" />
   </ItemGroup>
