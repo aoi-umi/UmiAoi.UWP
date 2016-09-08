@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.System.Profile;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
@@ -26,6 +27,24 @@ namespace UmiAoi.UWP
         {
             await new MessageDialog(message, title).ShowAsync();
         }
+
+        public static DeviceFamily GetDeviceFamily()
+        {
+            switch (AnalyticsInfo.VersionInfo.DeviceFamily)
+            {
+                case "Windows.Mobile":
+                    return DeviceFamily.Mobile;
+                case "Windows.Desktop":
+                default:
+                    return DeviceFamily.Desktop;
+            }
+        }
+    }
+
+    public enum DeviceFamily
+    {
+        Desktop,
+        Mobile
     }
 
     public class BindingModel
