@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Storage.AccessCache;
+using Windows.Storage.Pickers;
 using Windows.System.Profile;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -21,6 +24,24 @@ namespace UmiAoi.UWP
             if (bindingModel.ElementName != null) binding.ElementName = bindingModel.ElementName;
             binding.Mode = bindingModel.BindingMode;
             bindingModel.BindingElement.SetBinding(bindingModel.Property, binding);
+        }
+
+        public static async Task<IReadOnlyList<StorageFile>> GetFileList(IList<string> FileTypeFilter)
+        {
+            if (FileTypeFilter == null || FileTypeFilter.Count == 0) throw new Exception(nameof(FileTypeFilter) + "不能为空");
+            var Picker = new FileOpenPicker();
+            Picker.ViewMode = PickerViewMode.List;
+            foreach (var fileTypeFilter in FileTypeFilter)
+            {
+                Picker.FileTypeFilter.Add(fileTypeFilter);
+            }
+            var fileList = await Picker.PickMultipleFilesAsync();
+            if (fileList != null)
+            {
+                foreach(var file in fileList)
+                    StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", file);
+            }
+            return fileList;
         }
 
         public static async void ShowMessage(string message, string title = null)
