@@ -26,6 +26,21 @@ namespace UmiAoi.UWP
             bindingModel.BindingElement.SetBinding(bindingModel.Property, binding);
         }
 
+        private static ApplicationDataContainer LocalSettings = ApplicationData.Current.LocalSettings;
+        public static void SettingSet(string key, object value)
+        {
+            LocalSettings.Values[key] = value;
+        }
+
+        public static T SettingGet<T>(string key)
+        {
+            if (LocalSettings.Values.ContainsKey(key))
+            {
+                return (T)LocalSettings.Values[key];
+            }
+            return default(T);
+        }
+
         public static async Task<IReadOnlyList<StorageFile>> GetFileList(IList<string> FileTypeFilter)
         {
             if (FileTypeFilter == null || FileTypeFilter.Count == 0) throw new Exception(nameof(FileTypeFilter) + "不能为空");
