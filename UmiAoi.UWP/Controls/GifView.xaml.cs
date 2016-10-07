@@ -17,6 +17,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace UmiAoi.UWP.Controls
 {
@@ -80,7 +81,9 @@ namespace UmiAoi.UWP.Controls
 
                     if (readStream.ContentType.ToLowerInvariant() != "image/gif")
                     {
-                        throw new ArgumentException("Unsupported content type: " + readStream.ContentType);
+                        //GifImage.Source = new BitmapImage(uriSource);
+                        //throw new ArgumentException("Unsupported content type: " + readStream.ContentType);
+                        return;
                     }
 
                     using (readStream)
