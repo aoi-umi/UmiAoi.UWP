@@ -64,15 +64,18 @@ namespace UmiAoi.UWP
             await new MessageDialog(message, title).ShowAsync();
         }
 
-        public static DeviceFamily GetDeviceFamily()
+        public static DeviceFamily CurrDeviceFamily
         {
-            switch (AnalyticsInfo.VersionInfo.DeviceFamily)
+            get
             {
-                case "Windows.Mobile":
-                    return DeviceFamily.Mobile;
-                case "Windows.Desktop":
-                default:
-                    return DeviceFamily.Desktop;
+                switch (AnalyticsInfo.VersionInfo.DeviceFamily)
+                {
+                    case "Windows.Mobile":
+                        return DeviceFamily.Mobile;
+                    case "Windows.Desktop":
+                    default:
+                        return DeviceFamily.Desktop;
+                }
             }
         }
     }
