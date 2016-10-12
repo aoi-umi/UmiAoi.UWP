@@ -50,7 +50,6 @@ namespace UmiAoi.UWP.Behaviors
             var delta = (double)e.GetCurrentPoint(_element).Properties.MouseWheelDelta / 1000;
             if (_element.ActualWidth < 50 && (1 + delta) <= 1) return;
             _element.Height = double.NaN;
-            _element.Width = double.NaN;
             _element.Width = _element.ActualWidth * (1 + delta);
             e.Handled = true;
         }
@@ -60,7 +59,6 @@ namespace UmiAoi.UWP.Behaviors
             var delta = e.Delta.Scale;
             if (_element.ActualWidth < 50 && (delta) <= 0) return;
             _element.Height = double.NaN;
-            _element.Width = double.NaN;
             _element.Width = _element.ActualWidth * (delta);
             e.Handled = true;
         }
