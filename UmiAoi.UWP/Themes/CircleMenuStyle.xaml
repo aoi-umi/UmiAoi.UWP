@@ -1,0 +1,23 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UmiAoi.UWP.Controls">
+    <Style TargetType="local:CircleMenu">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:CircleMenu">
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Canvas x:Name="Canvas" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <AppBarButton  HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Icon="Accept" Background="Red"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

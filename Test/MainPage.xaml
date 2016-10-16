@@ -9,15 +9,18 @@
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity" 
     xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
     x:Class="Test.MainPage" 
+    xmlns:TestDll="TestDll"
     mc:Ignorable="d">
+    <UserControl.Resources>
+    </UserControl.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition Height="20"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel>
-            <uaCtr:GifView UriSource="ms-appx:///Images/sample.gif" Stretch="None"/>
+        <StackPanel Grid.Row="0">
+            <AppBarButton Icon="Account"/>
             <ListBox>
                 <ListBoxItem HorizontalContentAlignment="Stretch">
                     <Button Content="aaa" HorizontalAlignment="Stretch">
@@ -82,22 +85,22 @@
                 <Button Click="ExitFullScreen_Click">exit full screen</Button>
             </GridView>
             <Grid>
-            <ScrollViewer Name="sv" 
+                <ScrollViewer Name="sv" 
                           Height="20" 
                           HorizontalScrollBarVisibility="Disabled"
                           HorizontalScrollMode="Disabled"
                           VerticalScrollBarVisibility="Hidden"
                           VerticalScrollMode="Disabled">
-            <RichTextBlock Name="rtb" 
+                    <RichTextBlock Name="rtb" 
                            TextWrapping="Wrap" 
                            IsTextSelectionEnabled="True">
-                    <Paragraph>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbb
-                    </Paragraph>
-                <Paragraph>aaaaaaaaaaaaa1</Paragraph>
-                <Paragraph>aaaaaaaaaaaaa2</Paragraph>
-                <Paragraph>aaaaaaaaaaaaa3</Paragraph>
-                </RichTextBlock>
-            </ScrollViewer>
+                        <Paragraph>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbb
+                        </Paragraph>
+                        <Paragraph>aaaaaaaaaaaaa1</Paragraph>
+                        <Paragraph>aaaaaaaaaaaaa2</Paragraph>
+                        <Paragraph>aaaaaaaaaaaaa3</Paragraph>
+                    </RichTextBlock>
+                </ScrollViewer>
                 <Grid Name="rectGrid" Background="White">
                     <Image IsHitTestVisible="False" Name="rect" Height="{Binding ActualHeight, ElementName=sv}"></Image>
                 </Grid>
@@ -106,7 +109,6 @@
                 <Button Click="PrevPage_Click">上一页</Button>
                 <Button Click="NextPage_Click">下一页</Button>
             </GridView>
-            <uaCtr:MultiPageRichTextBox Height="20"/>
         </StackPanel>
         <Button Grid.Row="1" 
                 Background="{StaticResource SystemControlHighlightAltListAccentLowBrush}"
@@ -118,10 +120,28 @@
                 </Core:EventTriggerBehavior>
             </Interactivity:Interaction.Behaviors>
         </Button>
-        <uaCtr:MaskView Grid.RowSpan="2" Visibility="Collapsed">
-            <uaCtr:MaskView.MaskContent>
-                <Button Height="100" Width="100">MaskButton</Button>
-            </uaCtr:MaskView.MaskContent>
-        </uaCtr:MaskView>
+        <Canvas>
+            <uaCtr:CircleMenu Height="44" Width="44" Background="BlueViolet" 
+                              CircleRadius="89"
+                              Canvas.Left="150" BorderBrush="Black" BorderThickness="2">
+                <Interactivity:Interaction.Behaviors>
+                    <uaBeh:DragBehavior IsKeptMovePointCenter="False"/>
+                </Interactivity:Interaction.Behaviors>
+                <AppBarButton Icon="Account"
+                              Background="BlueViolet"/>
+                <AppBarButton Icon="Account" 
+                              Background="BlueViolet"/>
+                <AppBarButton Icon="Account" 
+                              Background="BlueViolet"/>
+                <AppBarButton Icon="Account" 
+                              Background="BlueViolet"/>
+                <AppBarButton Icon="Accept" 
+                              Background="BlueViolet"/>
+                <AppBarButton Icon="Accept" 
+                              Background="BlueViolet"/>
+                <AppBarButton Icon="Accept" 
+                              Background="BlueViolet"/>
+            </uaCtr:CircleMenu>
+        </Canvas>
     </Grid>
 </Page>
