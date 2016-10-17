@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
 
@@ -16,11 +17,15 @@ namespace UmiAoi.UWP.Controls
     public sealed class CircleMenu : ItemsControl
     {
         private static string CanvasName = "Canvas";
+        private static string MenuName = "Menu";
+
         public CircleMenu()
         {
             this.DefaultStyleKey = typeof(CircleMenu);
+            Loaded += CircleMenu_Loaded;
         }
 
+        #region DependencyProperty
         public double CircleRadius
         {
             get { return (double)GetValue(CircleRadiusProperty); }
@@ -51,27 +56,114 @@ namespace UmiAoi.UWP.Controls
             (d as CircleMenu).UpdateUI();
         }
 
+        public double OffsetAngle
+        {
+            get { return (double)GetValue(OffsetAngleProperty); }
+            set { SetValue(OffsetAngleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for OffsetAngle.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty OffsetAngleProperty =
+            DependencyProperty.Register(nameof(OffsetAngle), typeof(double), typeof(CircleMenu), new PropertyMetadata(0.0, new PropertyChangedCallback(OffsetAngleChanged)));
+
+        private static void OffsetAngleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as CircleMenu).UpdateUI();
+        }
+
+        public bool IsOpen
+        {
+            get { return (bool)GetValue(IsOpenProperty); }
+            set { SetValue(IsOpenProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsOpen.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsOpenProperty =
+            DependencyProperty.Register(nameof(IsOpen), typeof(bool), typeof(CircleMenu), new PropertyMetadata(true, new PropertyChangedCallback(IsOpenChanged)));
+
+        private static void IsOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var circleMenu = (d as CircleMenu);
+            circleMenu.BeginAnimate();
+        }
+
+        #endregion
+
+        public delegate void ItemsTappedEventHandler(Object sender, TappedRoutedEventArgs e);
+        public event ItemsTappedEventHandler ItemsTapped;
+
         private Canvas canvas { get; set; }
+        private FrameworkElement menu { get; set; }
+        private Storyboard storyboard { get; set; }
         protected override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
             canvas = GetTemplateChild(CanvasName) as Canvas;
+            menu = GetTemplateChild(MenuName) as FrameworkElement;
+            menu.Tapped += Menu_Tapped;
             UpdateUI();
         }
-                
+
+        private void CircleMenu_Loaded(object sender, RoutedEventArgs e)
+        {
+            Init();
+        }
+
+        private void Menu_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            IsOpen = !IsOpen;
+        }
+
         protected override void OnItemsChanged(object e)
         {
             base.OnItemsChanged(e);            
             UpdateUI();
         }
-        
+
+        private double millSeconds = 500;
+        private void Init()
+        {
+            storyboard = new Storyboard();
+            storyboard.Completed += Storyboard_Completed;
+            foreach (var item in Items)
+            {
+                var element = item as FrameworkElement;
+                if (element != null)
+                {
+                    element.Tapped += Items_Tapped;
+                    var animateX = new DoubleAnimation()
+                    {
+                        EnableDependentAnimation = true,
+                        EasingFunction = new ExponentialEase { Exponent = 4, EasingMode = EasingMode.EaseOut },
+                        Duration = new Duration(TimeSpan.FromMilliseconds(millSeconds)),
+                        From = 0,
+                        To = Canvas.GetLeft(element),
+                    };
+                    var animateY = new DoubleAnimation
+                    {
+                        EnableDependentAnimation = true,
+                        EasingFunction = new ExponentialEase { Exponent = 4, EasingMode = EasingMode.EaseOut },
+                        Duration = new Duration(TimeSpan.FromMilliseconds(millSeconds)),
+                        From = 0,
+                        To = Canvas.GetTop(element),
+                    };
+                    Storyboard.SetTarget(animateX, element);
+                    Storyboard.SetTarget(animateY, element);
+                    Storyboard.SetTargetProperty(animateX, "(Canvas.Left)");
+                    Storyboard.SetTargetProperty(animateY, "(Canvas.Top)");
+                    storyboard.Children.Add(animateX);
+                    storyboard.Children.Add(animateY);
+                }
+            }
+        }
+
         private void UpdateUI()
         {
             if (canvas != null)
-            {
+            {               
                 canvas.Children.Clear();
-                double theta = 0;
-                double thetaRadians = 0;
+                double theta = OffsetAngle;
+                double thetaRadians = OffsetAngle * Math.PI / 180F;
                 int count = Items.Count;
                 foreach (var item in Items)
                 {
@@ -92,15 +184,79 @@ namespace UmiAoi.UWP.Controls
                         Helper.BindingHelper(bindingModel);
 
                         if (!canvas.Children.Contains(element)) canvas.Children.Add(element);
-                        //var diagonaphal = Math.Sqrt(Math.Pow(element.ActualWidth, 2) + Math.Pow(element.ActualHeight, 2)) / 2;
-                        var x = (double)(CircleRadius * Math.Sin(thetaRadians) - element.Width / 2);
-                        var y = (double)(-CircleRadius * Math.Cos(thetaRadians) - element.Height / 2);
+                        var x = (double)(CircleRadius * Math.Sin(thetaRadians));
+                        var y = (double)(-CircleRadius * Math.Cos(thetaRadians));
                         Canvas.SetLeft(element, x);
                         Canvas.SetTop(element, y);
                         if (double.IsNaN(ThetaAngle)) theta += 360F / count;
                         else theta += ThetaAngle;
-                        thetaRadians = theta * Math.PI / 180F;
+                        thetaRadians = theta * Math.PI / 180F;                       
                     }
+                }
+            }
+        }
+
+        private void Items_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            BeginAnimate();
+            ItemsTapped?.Invoke(sender, e);
+        }
+
+        private void BeginAnimate()
+        {
+            if (storyboard == null) return;
+            storyboard.Stop();
+            if (IsOpen)
+            {
+                foreach (var child in canvas.Children)
+                {
+                    var element = child as FrameworkElement;
+                    if (element != null)
+                        element.Visibility = Visibility.Visible;
+                }
+
+                foreach (var child in storyboard.Children)
+                {
+                    var animate = child as DoubleAnimation;
+                    if (animate != null)
+                    {
+                        animate.EasingFunction.EasingMode = EasingMode.EaseOut;
+                        if (animate.To == 0)
+                        {
+                            animate.To = animate.From;
+                            animate.From = 0;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (var child in storyboard.Children)
+                {
+                    var animate = child as DoubleAnimation;
+                    if (animate != null)
+                    {
+                        animate.EasingFunction.EasingMode = EasingMode.EaseIn;
+                        if (animate.From == 0)
+                        {
+                            animate.From = animate.To;
+                            animate.To = 0;
+                        }
+                    }
+                }
+            }
+            storyboard.Begin();
+        }
+
+        private void Storyboard_Completed(object sender, object e)
+        {
+            if (!IsOpen)
+            {
+                foreach (var child in canvas.Children)
+                {
+                    var element = child as FrameworkElement;
+                    if (element != null)
+                        element.Visibility = Visibility.Collapsed;
                 }
             }
         }

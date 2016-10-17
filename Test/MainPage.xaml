@@ -10,12 +10,14 @@
     xmlns:uaCtr="using:UmiAoi.UWP.Controls"
     xmlns:uaBeh="using:UmiAoi.UWP.Behaviors"
     mc:Ignorable="d">
-
+    <Page.Resources>
+        <SolidColorBrush x:Key="ThemeColor" Color="{ThemeResource SystemAltLowColor}"/>
+    </Page.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition Height="20"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
             <AppBarButton Icon="Account"/>
@@ -119,27 +121,26 @@
             </Interactivity:Interaction.Behaviors>
         </Button>
         <Canvas>
-            <uaCtr:CircleMenu Height="44" Width="44"
-                              CircleRadius="80" Name="menu" 
+            <uaCtr:CircleMenu Height="55" Width="55"
+                              CircleRadius="80" Name="menu" OffsetAngle="30"
                               Canvas.Left="150" Background="BlueViolet">
                 <Interactivity:Interaction.Behaviors>
                     <uaBeh:DragBehavior IsKeptMovePointCenter="False"/>
                 </Interactivity:Interaction.Behaviors>
                 <AppBarButton Icon="Account"
-                              Background="BlueViolet"/>
+                              Background="{StaticResource ThemeColor}" 
+                              Style="{StaticResource EllipseAppBarButtonStyle}"/>
                 <AppBarButton Icon="Add"
-                              Background="BlueViolet"/>
+                              Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}" 
+                              Style="{StaticResource EllipseAppBarButtonStyle}"/>
                 <AppBarButton Icon="AddFriend"
-                              Background="BlueViolet"/>
+                              Background="BlueViolet" Style="{StaticResource EllipseAppBarButtonStyle}"/>
                 <AppBarButton Icon="Admin"
-                              Background="BlueViolet"/>
+                              Background="BlueViolet" Style="{StaticResource EllipseAppBarButtonStyle}"/>
                 <AppBarButton Icon="AlignCenter"
-                              Background="BlueViolet" />
+                              Background="BlueViolet" Style="{StaticResource EllipseAppBarButtonStyle}"/>
                 <AppBarButton Icon="AlignLeft"
-                              Background="BlueViolet"/>
-                <AppBarButton Icon="AlignRight"
-                              Background="BlueViolet"/>
-                <Button Content="1000" Background="BlueViolet"/>
+                              Background="BlueViolet" Style="{StaticResource EllipseAppBarButtonStyle}"/>
             </uaCtr:CircleMenu>
         </Canvas>
     </Grid>
