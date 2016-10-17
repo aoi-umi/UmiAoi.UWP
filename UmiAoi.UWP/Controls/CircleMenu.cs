@@ -198,7 +198,7 @@ namespace UmiAoi.UWP.Controls
 
         private void Items_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            BeginAnimate();
+            IsOpen = false;
             ItemsTapped?.Invoke(sender, e);
         }
 
