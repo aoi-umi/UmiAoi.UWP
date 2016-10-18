@@ -66,7 +66,7 @@ namespace UmiAoi.UWP.Behaviors
                 element.SetValue(Canvas.TopProperty, top + pos.Y);
             }
         }
-
+        
         private void Element_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
         {
             PressedPoint = new Point(0, 0);
