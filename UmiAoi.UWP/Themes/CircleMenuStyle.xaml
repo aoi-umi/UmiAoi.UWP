@@ -15,7 +15,8 @@
                                 <Grid>
                                     <Canvas x:Name="Canvas"/>
                                     <AppBarButton  x:Name="Menu" Style="{StaticResource EllipseAppBarButtonStyle}"                                                         
-                                                   Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Icon="Accept" Background="{TemplateBinding Background}"/>
+                                                   Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" 
+                                                   Icon="{TemplateBinding MenuIcon}" Background="{TemplateBinding Background}"/>
 
                                 </Grid>
                             </Border>
