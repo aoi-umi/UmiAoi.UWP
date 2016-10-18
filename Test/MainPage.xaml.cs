@@ -24,7 +24,12 @@ namespace Test
     {
         public MainPage()
         {
-            this.InitializeComponent();
+            this.InitializeComponent(); 
+        }
+
+        private void AppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            menu.Items.Remove(sender);
         }
     }
 }

@@ -33,8 +33,10 @@ namespace UmiAoi.UWP.Behaviors
             if (element != null)
             {
                 element.PointerMoved += Element_PointerMoved;
+                element.PointerExited += Element_PointerExited;
             }
         }
+
         private Point PressedPoint { get; set; }
 
         private void Element_PointerMoved(object sender, PointerRoutedEventArgs e)
@@ -63,7 +65,11 @@ namespace UmiAoi.UWP.Behaviors
                 element.SetValue(Canvas.LeftProperty, left + pos.X);
                 element.SetValue(Canvas.TopProperty, top + pos.Y);
             }
-            else if (PressedPoint.X != 0 && PressedPoint.Y != 0)
+        }
+
+        private void Element_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (PressedPoint.X != 0 && PressedPoint.Y != 0)
             {
                 PressedPoint = new Point(0, 0);
             }
@@ -74,6 +80,7 @@ namespace UmiAoi.UWP.Behaviors
             if (element != null)
             {
                 element.PointerMoved -= Element_PointerMoved;
+                element.PointerExited -= Element_PointerExited;
             }
 
         }
