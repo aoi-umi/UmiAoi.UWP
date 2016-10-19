@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -193,19 +194,120 @@ namespace UmiAoi.UWP.Controls
                 }
             }
         }
-
+        IEnumerable<UIElement> changedItems;
         private void UpdateUI()
         {
             if (canvas != null)
-            {               
-                canvas.Children.Clear();
-                double theta = OffsetAngle;
-                double thetaRadians = OffsetAngle * Math.PI / 180F;
-                int count = Items.Count;
-                foreach (var item in Items)
+            {
+                if (IsOpen)
                 {
-                    var element = item as FrameworkElement;
-                    if (element != null)
+                    UpdateItemsChangedStoryBoard();
+                }
+                else
+                {
+                    Update();
+                }
+            }
+        }                    
+
+        private void Update()
+        {
+            canvas.Children.Clear();
+            double theta = OffsetAngle;
+            double thetaRadians = OffsetAngle * Math.PI / 180F;
+            int count = Items.Count;
+            foreach (var item in Items)
+            {
+                var element = item as FrameworkElement;
+                if (element != null)
+                {
+                    var bindingModel = new BindingModel()
+                    {
+                        Source = this,
+                        Path = nameof(Width),
+                        BindingElement = element,
+                        Property = FrameworkElement.WidthProperty,
+                        BindingMode = BindingMode.OneWay
+                    };
+                    Helper.BindingHelper(bindingModel);
+                    bindingModel.Path = nameof(Height);
+                    bindingModel.Property = FrameworkElement.HeightProperty;
+                    Helper.BindingHelper(bindingModel);
+
+                    if (!canvas.Children.Contains(element)) canvas.Children.Add(element);
+                    var x = (double)(CircleRadius * Math.Sin(thetaRadians));
+                    var y = (double)(-CircleRadius * Math.Cos(thetaRadians));
+                    Canvas.SetLeft(element, x);
+                    Canvas.SetTop(element, y);
+                    if (double.IsNaN(ThetaAngle)) theta += 360F / count;
+                    else theta += ThetaAngle;
+                    thetaRadians = theta * Math.PI / 180F;
+                }
+            }
+            UpdateStoryBoard();
+        }
+
+        private void UpdateItemsChangedStoryBoard()
+        {
+            UpdateStoryBoard();
+            bool remove = true;
+            changedItems = canvas.Children.Where(x => !Items.Contains(x));
+            if (changedItems.Count() == 0)
+            {
+                changedItems = Items.Where(x => (x as UIElement) != null && !canvas.Children.Contains(x)).Select(x => x as UIElement);
+                remove = false;
+            }
+            if (changedItems.Count() == 0) return;
+            Storyboard itemsChangedStoryBoard = new Storyboard();
+            foreach (var item in changedItems)
+            {
+                var element = item as FrameworkElement;
+                double from = 1, to = 0;
+                if (!remove)
+                {
+                    from = 0;
+                    to = 1;
+                }
+                if (element != null)
+                {
+                    var animateX = new DoubleAnimation()
+                    {
+                        EnableDependentAnimation = true,
+                        EasingFunction = new ExponentialEase { Exponent = 4, EasingMode = EasingMode.EaseOut },
+                        Duration = new Duration(TimeSpan.FromMilliseconds(millSeconds)),
+                        From = from,
+                        To = to,
+                    };
+                    var animateY = new DoubleAnimation
+                    {
+                        EnableDependentAnimation = true,
+                        EasingFunction = new ExponentialEase { Exponent = 4, EasingMode = EasingMode.EaseOut },
+                        Duration = new Duration(TimeSpan.FromMilliseconds(millSeconds)),
+                        From = from,
+                        To = to,
+                    };
+                    var ct = new CompositeTransform();
+                    element.RenderTransform = ct;
+                    element.RenderTransformOrigin = new Point(0.5, 0.5);
+                    Storyboard.SetTarget(animateX, element.RenderTransform);
+                    Storyboard.SetTarget(animateY, element.RenderTransform);
+                    Storyboard.SetTargetProperty(animateX, nameof(CompositeTransform.ScaleX));
+                    Storyboard.SetTargetProperty(animateY, nameof(CompositeTransform.ScaleY));
+                    itemsChangedStoryBoard.Children.Add(animateX);
+                    itemsChangedStoryBoard.Children.Add(animateY);
+                }
+            }
+            double theta = OffsetAngle;
+            double thetaRadians = OffsetAngle * Math.PI / 180F;
+            int count = Items.Count;
+            foreach (var item in Items)
+            {
+                var element = item as FrameworkElement;
+                if (element != null)
+                {
+                    var x = (double)(CircleRadius * Math.Sin(thetaRadians));
+                    var y = (double)(-CircleRadius * Math.Cos(thetaRadians));
+                    if (!remove)
                     {
                         var bindingModel = new BindingModel()
                         {
@@ -219,18 +321,52 @@ namespace UmiAoi.UWP.Controls
                         bindingModel.Path = nameof(Height);
                         bindingModel.Property = FrameworkElement.HeightProperty;
                         Helper.BindingHelper(bindingModel);
-
-                        if (!canvas.Children.Contains(element)) canvas.Children.Add(element);
-                        var x = (double)(CircleRadius * Math.Sin(thetaRadians));
-                        var y = (double)(-CircleRadius * Math.Cos(thetaRadians));
-                        Canvas.SetLeft(element, x);
-                        Canvas.SetTop(element, y);
-                        if (double.IsNaN(ThetaAngle)) theta += 360F / count;
-                        else theta += ThetaAngle;
-                        thetaRadians = theta * Math.PI / 180F;                       
+                        if (!canvas.Children.Contains(element))
+                        {
+                            canvas.Children.Add(element);
+                            Canvas.SetLeft(element, x);
+                            Canvas.SetTop(element, y);
+                        }
                     }
+                    var animateX = new DoubleAnimation()
+                    {
+                        EnableDependentAnimation = true,
+                        EasingFunction = new ExponentialEase { Exponent = 4, EasingMode = EasingMode.EaseOut },
+                        Duration = new Duration(TimeSpan.FromMilliseconds(millSeconds)),
+                        From = Canvas.GetLeft(element),
+                        To = x,
+                    };
+                    var animateY = new DoubleAnimation
+                    {
+                        EnableDependentAnimation = true,
+                        EasingFunction = new ExponentialEase { Exponent = 4, EasingMode = EasingMode.EaseOut },
+                        Duration = new Duration(TimeSpan.FromMilliseconds(millSeconds)),
+                        From = Canvas.GetTop(element),
+                        To = y,
+                    };
+                    Storyboard.SetTarget(animateX, element);
+                    Storyboard.SetTarget(animateY, element);
+                    Storyboard.SetTargetProperty(animateX, "(Canvas.Left)");
+                    Storyboard.SetTargetProperty(animateY, "(Canvas.Top)");
+                    itemsChangedStoryBoard.Children.Add(animateX);
+                    itemsChangedStoryBoard.Children.Add(animateY);
+                    if (double.IsNaN(ThetaAngle)) theta += 360F / count;
+                    else theta += ThetaAngle;
+                    thetaRadians = theta * Math.PI / 180F;
                 }
-                UpdateStoryBoard();
+            }
+            itemsChangedStoryBoard.Begin();
+            itemsChangedStoryBoard.Completed += ItemsChangedStoryBoard_Completed;
+        }
+
+        private void ItemsChangedStoryBoard_Completed(object sender, object e)
+        {
+            var storyboard = (sender as Storyboard);
+            if(storyboard != null) storyboard.Completed -= ItemsChangedStoryBoard_Completed;
+            foreach (var item in changedItems)
+            {
+                var element = item as FrameworkElement;
+                if (element != null && !Items.Contains(element)) canvas.Children.Remove(element);
             }
         }
 

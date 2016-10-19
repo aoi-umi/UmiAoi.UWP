@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -28,8 +29,24 @@ namespace Test
         }
 
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
+        {            
+            menu.Items.Remove(sender);            
+            menu.Items.Insert(new Random().Next(0, menu.Items.Count), sender);
+        }
+
+        private void Add_Click(object sender, RoutedEventArgs e)
         {
-            menu.Items.Remove(sender);
+            menu.Items.Insert(new Random().Next(0, menu.Items.Count), new AppBarButton()
+            {
+                Icon = new SymbolIcon() { Symbol = Symbol.Add },
+                Background = new SolidColorBrush(Colors.BlueViolet)
+            });
+        }
+
+        private void Remove_Click(object sender, RoutedEventArgs e)
+        {
+            if(menu.Items.Count != 0)
+            menu.Items.RemoveAt(new Random().Next(0, menu.Items.Count));
         }
     }
 }

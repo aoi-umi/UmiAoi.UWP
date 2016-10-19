@@ -46,12 +46,12 @@
             </Border>
             <Button HorizontalAlignment="Stretch">aaa</Button>
             <GridView>
-                <Button Content="b">
+                <Button Content="add" Click="Add_Click">
                     <Interactivity:Interaction.Behaviors>
                         <uaBeh:FocusBehavior TransformType="Center" From="0" To="100"/>
                     </Interactivity:Interaction.Behaviors>
                 </Button>
-                <Button Content="b">
+                <Button Content="remove" Click="Remove_Click">
                     <Interactivity:Interaction.Behaviors>
                         <uaBeh:FocusBehavior TransformType="Rotation" From="0" To="360"/>
                     </Interactivity:Interaction.Behaviors>
@@ -127,17 +127,17 @@
                 <Interactivity:Interaction.Behaviors>
                     <uaBeh:DragBehavior IsKeptMovePointCenter="False"/>
                 </Interactivity:Interaction.Behaviors>
-                <AppBarButton Icon="Account"
+                <AppBarButton Icon="Account" Click="AppBarButton_Click"
                               Background="{StaticResource ThemeColor}" 
                               Style="{StaticResource EllipseAppBarButtonStyle}"/>
-                <AppBarButton Icon="Add"
+                <AppBarButton Icon="Add" Click="AppBarButton_Click"
                               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}" 
                               Style="{StaticResource EllipseAppBarButtonStyle}"/>
-                <AppBarButton Icon="AddFriend"
+                <AppBarButton Icon="AddFriend" Click="AppBarButton_Click"
                               Background="BlueViolet" Style="{StaticResource EllipseAppBarButtonStyle}"/>
-                <AppBarButton Icon="Admin"
+                <AppBarButton Icon="Admin" Click="AppBarButton_Click"
                               Background="BlueViolet" Style="{StaticResource EllipseAppBarButtonStyle}"/>
-                <AppBarButton Icon="AlignCenter"
+                <AppBarButton Icon="AlignCenter" Click="AppBarButton_Click"
                               Background="BlueViolet" Style="{StaticResource EllipseAppBarButtonStyle}"/>
                 <AppBarButton Icon="AlignLeft" Click="AppBarButton_Click"
                               Background="BlueViolet" Style="{StaticResource EllipseAppBarButtonStyle}"/>
