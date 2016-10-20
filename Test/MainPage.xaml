@@ -121,7 +121,7 @@
             </Interactivity:Interaction.Behaviors>
         </Button>
         <Canvas>
-            <uaCtr:CircleMenu Height="55" Width="55" IsOpen="True"
+            <uaCtr:CircleMenu Height="55" Width="55" IsOpen="False"
                               CircleRadius="80" Name="menu" OffsetAngle="30"
                               Canvas.Left="150" Background="BlueViolet">
                 <Interactivity:Interaction.Behaviors>

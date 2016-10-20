@@ -109,7 +109,7 @@ namespace UmiAoi.UWP.Controls
         private Canvas canvas { get; set; }
         private FrameworkElement menu { get; set; }
         private Storyboard storyboard { get; set; }
-        private ItemCollection OldItems { get; set; }
+        private bool isInited { get; set; }
         protected override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -119,20 +119,10 @@ namespace UmiAoi.UWP.Controls
             UpdateUI();
         }
 
-        private void CircleMenu_Loaded(object sender, RoutedEventArgs e)
-        {
-            Init();
-        }
-
-        private void Menu_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            IsOpen = !IsOpen;
-        }
-
         protected override void OnItemsChanged(object e)
         {
             base.OnItemsChanged(e);
-            UpdateUI();
+            UpdateAfterItemsChanged();
         }
 
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
@@ -145,6 +135,43 @@ namespace UmiAoi.UWP.Controls
         {
             storyboard = new Storyboard();
             storyboard.Completed += Storyboard_Completed;
+            isInited = true;
+        }
+
+        private void UpdateUI()
+        {
+            if (canvas != null)
+            {
+                if (IsOpen)
+                {
+                    UpdateAfterItemsChanged();
+                }
+                else
+                {
+                    Update();
+                }
+            }
+        }                    
+
+        private void Update()
+        {
+            double theta = OffsetAngle;
+            double thetaRadians = OffsetAngle * Math.PI / 180F;
+            int count = Items.Count;
+            foreach (var item in Items)
+            {
+                var element = item as FrameworkElement;
+                if (element != null)
+                {
+                    var x = (double)(CircleRadius * Math.Sin(thetaRadians));
+                    var y = (double)(-CircleRadius * Math.Cos(thetaRadians));
+                    Canvas.SetLeft(element, x);
+                    Canvas.SetTop(element, y);
+                    if (double.IsNaN(ThetaAngle)) theta += 360F / count;
+                    else theta += ThetaAngle;
+                    thetaRadians = theta * Math.PI / 180F;
+                }
+            }
             UpdateStoryBoard();
         }
 
@@ -159,105 +186,65 @@ namespace UmiAoi.UWP.Controls
                     var element = item as FrameworkElement;
                     if (element != null)
                     {
-                        element.Tapped += Items_Tapped;
-                        var animateX = new DoubleAnimation()
-                        {
-                            EnableDependentAnimation = true,
-                            EasingFunction = new ExponentialEase { Exponent = 4, EasingMode = EasingMode.EaseOut },
-                            Duration = new Duration(TimeSpan.FromMilliseconds(millSeconds)),
-                            From = 0,
-                            To = Canvas.GetLeft(element),
-                        };
-                        var animateY = new DoubleAnimation
-                        {
-                            EnableDependentAnimation = true,
-                            EasingFunction = new ExponentialEase { Exponent = 4, EasingMode = EasingMode.EaseOut },
-                            Duration = new Duration(TimeSpan.FromMilliseconds(millSeconds)),
-                            From = 0,
-                            To = Canvas.GetTop(element),
-                        };
-                        if (!IsOpen)
-                        {
-                            element.Visibility = Visibility.Collapsed;
-                            animateX.From = animateX.To;
-                            animateX.To = 0;
-                            animateY.From = animateY.To;
-                            animateY.To = 0;
-                        }
-                        Storyboard.SetTarget(animateX, element);
-                        Storyboard.SetTarget(animateY, element);
-                        Storyboard.SetTargetProperty(animateX, "(Canvas.Left)");
-                        Storyboard.SetTargetProperty(animateY, "(Canvas.Top)");
-                        storyboard.Children.Add(animateX);
-                        storyboard.Children.Add(animateY);
+                        double x = Canvas.GetLeft(element);
+                        double y = Canvas.GetTop(element);
+                        if (!IsOpen) SetStoryBoard(storyboard, element, x, 0, y, 0);                        
+                        else SetStoryBoard(storyboard, element, 0, x, 0, y);                        
                     }
                 }
             }
         }
-        IEnumerable<UIElement> changedItems;
-        private void UpdateUI()
-        {
-            if (canvas != null)
-            {
-                if (IsOpen)
-                {
-                    UpdateItemsChangedStoryBoard();
-                }
-                else
-                {
-                    Update();
-                }
-            }
-        }                    
 
-        private void Update()
+        private void UpdateAfterItemsChanged()
         {
-            canvas.Children.Clear();
-            double theta = OffsetAngle;
-            double thetaRadians = OffsetAngle * Math.PI / 180F;
-            int count = Items.Count;
-            foreach (var item in Items)
-            {
-                var element = item as FrameworkElement;
-                if (element != null)
-                {
-                    var bindingModel = new BindingModel()
-                    {
-                        Source = this,
-                        Path = nameof(Width),
-                        BindingElement = element,
-                        Property = FrameworkElement.WidthProperty,
-                        BindingMode = BindingMode.OneWay
-                    };
-                    Helper.BindingHelper(bindingModel);
-                    bindingModel.Path = nameof(Height);
-                    bindingModel.Property = FrameworkElement.HeightProperty;
-                    Helper.BindingHelper(bindingModel);
-
-                    if (!canvas.Children.Contains(element)) canvas.Children.Add(element);
-                    var x = (double)(CircleRadius * Math.Sin(thetaRadians));
-                    var y = (double)(-CircleRadius * Math.Cos(thetaRadians));
-                    Canvas.SetLeft(element, x);
-                    Canvas.SetTop(element, y);
-                    if (double.IsNaN(ThetaAngle)) theta += 360F / count;
-                    else theta += ThetaAngle;
-                    thetaRadians = theta * Math.PI / 180F;
-                }
-            }
-            UpdateStoryBoard();
-        }
-
-        private void UpdateItemsChangedStoryBoard()
-        {
-            UpdateStoryBoard();
-            bool remove = true;
-            changedItems = canvas.Children.Where(x => !Items.Contains(x));
+            if (canvas == null) return;
+            bool remove = false;
+            IEnumerable<UIElement> changedItems = Items.Where(x => (x as UIElement) != null && !canvas.Children.Contains(x)).Select(x => x as UIElement);
+            //int removeCount = changedItems.Count();
+            //int addCount = Items.Where(x => (x as UIElement) != null && !canvas.Children.Contains(x)).Select(x => x as UIElement).Count();
             if (changedItems.Count() == 0)
             {
-                changedItems = Items.Where(x => (x as UIElement) != null && !canvas.Children.Contains(x)).Select(x => x as UIElement);
-                remove = false;
+                changedItems = canvas.Children.Where(x => !Items.Contains(x));
+                remove = true;
             }
             if (changedItems.Count() == 0) return;
+            //System.Diagnostics.Debug.WriteLine("{0},{1}", removeCount, addCount);
+            if (!IsOpen || !isInited)
+            {
+                foreach (var item in changedItems)
+                {
+                    var element = item as FrameworkElement;
+                    if (!remove)
+                    {
+                        if (element != null && !canvas.Children.Contains(element))
+                        {
+                            element.Tapped += Items_Tapped;
+                            if (!IsOpen) element.Visibility = Visibility.Collapsed;
+                            var bindingModel = new BindingModel()
+                            {
+                                Source = this,
+                                Path = nameof(Width),
+                                BindingElement = element,
+                                Property = FrameworkElement.WidthProperty,
+                                BindingMode = BindingMode.OneWay
+                            };
+                            Helper.BindingHelper(bindingModel);
+                            bindingModel.Path = nameof(Height);
+                            bindingModel.Property = FrameworkElement.HeightProperty;
+                            Helper.BindingHelper(bindingModel);
+                            element.Tapped += Items_Tapped;
+                            canvas.Children.Add(element);
+                        }
+                    }
+                    else
+                    {
+                        element.Tapped -= Items_Tapped;
+                        canvas.Children.Remove(element);
+                    }
+                }
+                Update();
+                return;
+            }
             Storyboard itemsChangedStoryBoard = new Storyboard();
             foreach (var item in changedItems)
             {
@@ -276,7 +263,7 @@ namespace UmiAoi.UWP.Controls
                         EasingFunction = new ExponentialEase { Exponent = 4, EasingMode = EasingMode.EaseOut },
                         Duration = new Duration(TimeSpan.FromMilliseconds(millSeconds)),
                         From = from,
-                        To = to,
+                        To = to
                     };
                     var animateY = new DoubleAnimation
                     {
@@ -323,57 +310,64 @@ namespace UmiAoi.UWP.Controls
                         Helper.BindingHelper(bindingModel);
                         if (!canvas.Children.Contains(element))
                         {
+                            element.Tapped += Items_Tapped;
                             canvas.Children.Add(element);
                             Canvas.SetLeft(element, x);
                             Canvas.SetTop(element, y);
                         }
                     }
-                    var animateX = new DoubleAnimation()
-                    {
-                        EnableDependentAnimation = true,
-                        EasingFunction = new ExponentialEase { Exponent = 4, EasingMode = EasingMode.EaseOut },
-                        Duration = new Duration(TimeSpan.FromMilliseconds(millSeconds)),
-                        From = Canvas.GetLeft(element),
-                        To = x,
-                    };
-                    var animateY = new DoubleAnimation
-                    {
-                        EnableDependentAnimation = true,
-                        EasingFunction = new ExponentialEase { Exponent = 4, EasingMode = EasingMode.EaseOut },
-                        Duration = new Duration(TimeSpan.FromMilliseconds(millSeconds)),
-                        From = Canvas.GetTop(element),
-                        To = y,
-                    };
-                    Storyboard.SetTarget(animateX, element);
-                    Storyboard.SetTarget(animateY, element);
-                    Storyboard.SetTargetProperty(animateX, "(Canvas.Left)");
-                    Storyboard.SetTargetProperty(animateY, "(Canvas.Top)");
-                    itemsChangedStoryBoard.Children.Add(animateX);
-                    itemsChangedStoryBoard.Children.Add(animateY);
+                    SetStoryBoard(itemsChangedStoryBoard, element, Canvas.GetLeft(element), x, Canvas.GetTop(element), y);
                     if (double.IsNaN(ThetaAngle)) theta += 360F / count;
                     else theta += ThetaAngle;
                     thetaRadians = theta * Math.PI / 180F;
                 }
             }
             itemsChangedStoryBoard.Begin();
-            itemsChangedStoryBoard.Completed += ItemsChangedStoryBoard_Completed;
-        }
-
-        private void ItemsChangedStoryBoard_Completed(object sender, object e)
-        {
-            var storyboard = (sender as Storyboard);
-            if(storyboard != null) storyboard.Completed -= ItemsChangedStoryBoard_Completed;
-            foreach (var item in changedItems)
+            itemsChangedStoryBoard.Completed += (sender, e) =>
             {
-                var element = item as FrameworkElement;
-                if (element != null && !Items.Contains(element)) canvas.Children.Remove(element);
-            }
+                var storyboard = (sender as Storyboard);
+                if (storyboard != null)
+                {
+                    storyboard.Stop();
+                    storyboard.Children.Clear();
+                }
+                if (remove)
+                {
+                    foreach (var item in changedItems)
+                    {
+                        var element = item as FrameworkElement;
+                        if (element != null && !Items.Contains(element)) canvas.Children.Remove(element);
+                    }
+                }
+                Update();
+            };
+
         }
 
-        private void Items_Tapped(object sender, TappedRoutedEventArgs e)
+        private void SetStoryBoard(Storyboard storyboard, FrameworkElement element, double xFrom, double xTo, double yFrom, double yTo)
         {
-            IsOpen = false;
-            ItemsTapped?.Invoke(sender, e);
+            var animateX = new DoubleAnimation()
+            {
+                EnableDependentAnimation = true,
+                EasingFunction = new ExponentialEase { Exponent = 4, EasingMode = EasingMode.EaseOut },
+                Duration = new Duration(TimeSpan.FromMilliseconds(millSeconds)),
+                From = xFrom,
+                To = xTo,
+            };
+            var animateY = new DoubleAnimation
+            {
+                EnableDependentAnimation = true,
+                EasingFunction = new ExponentialEase { Exponent = 4, EasingMode = EasingMode.EaseOut },
+                Duration = new Duration(TimeSpan.FromMilliseconds(millSeconds)),
+                From = yFrom,
+                To = yTo,
+            };
+            Storyboard.SetTarget(animateX, element);
+            Storyboard.SetTarget(animateY, element);
+            Storyboard.SetTargetProperty(animateX, "(Canvas.Left)");
+            Storyboard.SetTargetProperty(animateY, "(Canvas.Top)");
+            storyboard.Children.Add(animateX);
+            storyboard.Children.Add(animateY);
         }
 
         private void BeginAnimate()
@@ -415,6 +409,22 @@ namespace UmiAoi.UWP.Controls
                 }
             }
             storyboard.Begin();
+        }
+
+        private void CircleMenu_Loaded(object sender, RoutedEventArgs e)
+        {
+            Init();
+        }
+
+        private void Menu_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            IsOpen = !IsOpen;
+        }
+
+        private void Items_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            IsOpen = false;
+            ItemsTapped?.Invoke(sender, e);
         }
 
         private void Storyboard_Completed(object sender, object e)

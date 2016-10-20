@@ -31,7 +31,7 @@ namespace Test
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
         {            
             menu.Items.Remove(sender);            
-            menu.Items.Insert(new Random().Next(0, menu.Items.Count), sender);
+            //menu.Items.Insert(new Random().Next(0, menu.Items.Count), sender);
         }
 
         private void Add_Click(object sender, RoutedEventArgs e)
