@@ -121,7 +121,7 @@
             </Interactivity:Interaction.Behaviors>
         </Button>
         <Canvas>
-            <uaCtr:CircleMenu Height="55" Width="55" IsOpen="False"
+            <uaCtr:CircleMenu Height="55" Width="55" IsOpen="True" BorderBrush="Black" BorderThickness="0"
                               CircleRadius="80" Name="menu" OffsetAngle="30"
                               Canvas.Left="150" Background="BlueViolet">
                 <Interactivity:Interaction.Behaviors>
@@ -137,7 +137,7 @@
                               Background="BlueViolet" Style="{StaticResource EllipseAppBarButtonStyle}"/>
                 <AppBarButton Icon="Admin" Click="AppBarButton_Click"
                               Background="BlueViolet" Style="{StaticResource EllipseAppBarButtonStyle}"/>
-                <AppBarButton Icon="AlignCenter" Click="AppBarButton_Click"
+                <AppBarButton Icon="AlignCenter" Click="AppBarButton_Click" BorderBrush="Red" BorderThickness="10"
                               Background="BlueViolet" Style="{StaticResource EllipseAppBarButtonStyle}"/>
                 <AppBarButton Icon="AlignLeft" Click="AppBarButton_Click"
                               Background="BlueViolet" Style="{StaticResource EllipseAppBarButtonStyle}"/>

@@ -9,15 +9,13 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="local:CircleMenu">
-                            <Border
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Border>
                                 <Grid>
                                     <Canvas x:Name="Canvas"/>
                                     <AppBarButton  x:Name="Menu" Style="{StaticResource EllipseAppBarButtonStyle}"                                                         
                                                    Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" 
-                                                   Icon="{TemplateBinding MenuIcon}" Background="{TemplateBinding Background}"/>
-
+                                                   Icon="{TemplateBinding MenuIcon}" Background="{TemplateBinding Background}"
+                                                   BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
                                 </Grid>
                             </Border>
                         </ControlTemplate>

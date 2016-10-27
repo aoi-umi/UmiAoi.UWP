@@ -116,6 +116,8 @@ namespace UmiAoi.UWP.Controls
             canvas = GetTemplateChild(CanvasName) as Canvas;
             menu = GetTemplateChild(MenuName) as FrameworkElement;
             menu.Tapped += Menu_Tapped;
+            menu.AllowFocusOnInteraction = true;
+            AllowFocusOnInteraction = true;
             UpdateUI();
         }
 
@@ -136,6 +138,7 @@ namespace UmiAoi.UWP.Controls
             storyboard = new Storyboard();
             storyboard.Completed += Storyboard_Completed;
             isInited = true;
+            UpdatePositionAndStoryBoard();
         }
 
         private void UpdateUI()
@@ -148,12 +151,12 @@ namespace UmiAoi.UWP.Controls
                 }
                 else
                 {
-                    Update();
+                    UpdatePositionAndStoryBoard();
                 }
             }
-        }                    
+        }
 
-        private void Update()
+        private void UpdatePositionAndStoryBoard()
         {
             double theta = OffsetAngle;
             double thetaRadians = OffsetAngle * Math.PI / 180F;
@@ -188,8 +191,8 @@ namespace UmiAoi.UWP.Controls
                     {
                         double x = Canvas.GetLeft(element);
                         double y = Canvas.GetTop(element);
-                        if (!IsOpen) SetStoryBoard(storyboard, element, x, 0, y, 0);                        
-                        else SetStoryBoard(storyboard, element, 0, x, 0, y);                        
+                        if (!IsOpen) SetStoryBoard(storyboard, element, x, 0, y, 0);
+                        else SetStoryBoard(storyboard, element, 0, x, 0, y);
                     }
                 }
             }
@@ -214,37 +217,48 @@ namespace UmiAoi.UWP.Controls
                 foreach (var item in changedItems)
                 {
                     var element = item as FrameworkElement;
-                    if (!remove)
+                    if (element != null)
                     {
-                        if (element != null && !canvas.Children.Contains(element))
+
+                        if (!remove)
                         {
-                            element.Tapped += Items_Tapped;
                             if (!IsOpen) element.Visibility = Visibility.Collapsed;
-                            var bindingModel = new BindingModel()
-                            {
-                                Source = this,
-                                Path = nameof(Width),
-                                BindingElement = element,
-                                Property = FrameworkElement.WidthProperty,
-                                BindingMode = BindingMode.OneWay
-                            };
-                            Helper.BindingHelper(bindingModel);
-                            bindingModel.Path = nameof(Height);
-                            bindingModel.Property = FrameworkElement.HeightProperty;
-                            Helper.BindingHelper(bindingModel);
-                            element.Tapped += Items_Tapped;
-                            canvas.Children.Add(element);
+                            if (!canvas.Children.Contains(element)) AddElementToCanvas(element);
+                        }
+                        else
+                        {
+                            element.Tapped -= Items_Tapped;
+                            canvas.Children.Remove(element);
                         }
                     }
-                    else
-                    {
-                        element.Tapped -= Items_Tapped;
-                        canvas.Children.Remove(element);
-                    }
                 }
-                Update();
+                UpdatePositionAndStoryBoard();
                 return;
             }
+            UpdateItemsChangedStoryBoard(remove, changedItems);
+        }
+
+        private void AddElementToCanvas(FrameworkElement element)
+        {
+            var bindingModel = new BindingModel()
+            {
+                Source = this,
+                Path = nameof(Width),
+                BindingElement = element,
+                Property = FrameworkElement.WidthProperty,
+                BindingMode = BindingMode.OneWay
+            };
+            Helper.BindingHelper(bindingModel);
+            bindingModel.Path = nameof(Height);
+            bindingModel.Property = FrameworkElement.HeightProperty;
+            Helper.BindingHelper(bindingModel);
+            //element.AllowFocusOnInteraction = true;
+            element.Tapped += Items_Tapped;
+            canvas.Children.Add(element);
+        }
+
+        private void UpdateItemsChangedStoryBoard(bool remove, IEnumerable<UIElement> changedItems)
+        {
             Storyboard itemsChangedStoryBoard = new Storyboard();
             foreach (var item in changedItems)
             {
@@ -296,22 +310,9 @@ namespace UmiAoi.UWP.Controls
                     var y = (double)(-CircleRadius * Math.Cos(thetaRadians));
                     if (!remove)
                     {
-                        var bindingModel = new BindingModel()
-                        {
-                            Source = this,
-                            Path = nameof(Width),
-                            BindingElement = element,
-                            Property = FrameworkElement.WidthProperty,
-                            BindingMode = BindingMode.OneWay
-                        };
-                        Helper.BindingHelper(bindingModel);
-                        bindingModel.Path = nameof(Height);
-                        bindingModel.Property = FrameworkElement.HeightProperty;
-                        Helper.BindingHelper(bindingModel);
                         if (!canvas.Children.Contains(element))
                         {
-                            element.Tapped += Items_Tapped;
-                            canvas.Children.Add(element);
+                            AddElementToCanvas(element);
                             Canvas.SetLeft(element, x);
                             Canvas.SetTop(element, y);
                         }
@@ -339,9 +340,8 @@ namespace UmiAoi.UWP.Controls
                         if (element != null && !Items.Contains(element)) canvas.Children.Remove(element);
                     }
                 }
-                Update();
+                UpdatePositionAndStoryBoard();
             };
-
         }
 
         private void SetStoryBoard(Storyboard storyboard, FrameworkElement element, double xFrom, double xTo, double yFrom, double yTo)
@@ -450,6 +450,7 @@ namespace UmiAoi.UWP.Controls
             base.OnDisconnectVisualChildren();
             Loaded -= CircleMenu_Loaded;
             menu.Tapped -= Menu_Tapped;
+            storyboard.Completed -= Storyboard_Completed;
         }
     }
 }

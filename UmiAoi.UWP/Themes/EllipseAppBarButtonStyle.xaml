@@ -16,7 +16,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="AppBarButton">
-                    <Grid x:Name="Root" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="Transparent" MaxWidth="{TemplateBinding MaxWidth}" MinWidth="{TemplateBinding MinWidth}">
+                    <Grid x:Name="Root" Background="Transparent" MaxWidth="{TemplateBinding MaxWidth}" MinWidth="{TemplateBinding MinWidth}">
                         <Grid.Resources>
                             <Style x:Name="LabelOnRightStyle" TargetType="AppBarButton">
                                 <Setter Property="Width" Value="NaN"/>
@@ -168,7 +168,7 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <Ellipse x:Name="Ellipse" Fill="{TemplateBinding Background}" Stroke="{TemplateBinding BorderBrush}"/>
+                        <Ellipse x:Name="Ellipse" Fill="{TemplateBinding Background}" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding BorderThickness}"/>
                         <Grid x:Name="ContentRoot" MinHeight="{ThemeResource AppBarThemeMinHeight}" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <!--<Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
