@@ -25,8 +25,9 @@ namespace UmiAoi.UWP.Controls
         public CircleMenu()
         {
             this.DefaultStyleKey = typeof(CircleMenu);
-            Loaded += CircleMenu_Loaded;
-        }
+            isDesignMode = Windows.ApplicationModel.DesignMode.DesignModeEnabled;
+            //Loaded += CircleMenu_Loaded;
+        }        
 
         #region DependencyProperty
         public double CircleRadius
@@ -86,9 +87,12 @@ namespace UmiAoi.UWP.Controls
 
         private static void IsOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var circleMenu = (d as CircleMenu);
-            circleMenu.UpdateUI();
-            circleMenu.BeginAnimate();
+            if (e.OldValue != e.NewValue)
+            {
+                var circleMenu = (d as CircleMenu);
+                circleMenu.UpdateUI();
+                circleMenu.BeginAnimate();
+            }
         }
 
         public IconElement MenuIcon
@@ -109,16 +113,33 @@ namespace UmiAoi.UWP.Controls
         private Canvas canvas { get; set; }
         private FrameworkElement menu { get; set; }
         private Storyboard storyboard { get; set; }
-        private bool isInited { get; set; }
+        //private bool isInited { get; set; }
+        private bool isDesignMode {get;set;}
         protected override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
             canvas = GetTemplateChild(CanvasName) as Canvas;
             menu = GetTemplateChild(MenuName) as FrameworkElement;
-            menu.Tapped += Menu_Tapped;
+            storyboard = new Storyboard();
+            AddEvent();
             menu.AllowFocusOnInteraction = true;
             AllowFocusOnInteraction = true;
             UpdateUI();
+        }
+
+        private void AddEvent()
+        {
+            storyboard.Completed += Storyboard_Completed;
+            menu.Tapped += Menu_Tapped;
+            menu.LostFocus += Menu_LostFocus;
+        }
+
+        private void RemoveEvent()
+        {
+            Loaded -= CircleMenu_Loaded;
+            menu.Tapped -= Menu_Tapped;
+            menu.LostFocus += Menu_LostFocus;
+            storyboard.Completed -= Storyboard_Completed;
         }
 
         protected override void OnItemsChanged(object e)
@@ -137,7 +158,7 @@ namespace UmiAoi.UWP.Controls
         {
             storyboard = new Storyboard();
             storyboard.Completed += Storyboard_Completed;
-            isInited = true;
+            //isInited = true;
             UpdatePositionAndStoryBoard();
         }
 
@@ -180,7 +201,7 @@ namespace UmiAoi.UWP.Controls
 
         private void UpdateStoryBoard()
         {
-            if (storyboard != null && canvas != null && storyboard.Children.Count != canvas.Children.Count * 2)
+            if (!isDesignMode && storyboard != null && canvas != null && storyboard.Children.Count != canvas.Children.Count * 2)
             {
                 storyboard.Stop();
                 storyboard.Children.Clear();
@@ -212,7 +233,7 @@ namespace UmiAoi.UWP.Controls
             }
             if (changedItems.Count() == 0) return;
             //System.Diagnostics.Debug.WriteLine("{0},{1}", removeCount, addCount);
-            if (!IsOpen || !isInited)
+            if (!IsOpen || !isDesignMode)
             {
                 foreach (var item in changedItems)
                 {
@@ -370,6 +391,7 @@ namespace UmiAoi.UWP.Controls
             storyboard.Children.Add(animateY);
         }
 
+        //private bool isStoryCompleted = true;
         private void BeginAnimate()
         {
             if (storyboard == null) return;
@@ -416,6 +438,11 @@ namespace UmiAoi.UWP.Controls
             Init();
         }
 
+        private void Menu_LostFocus(object sender, RoutedEventArgs e)
+        {
+            IsOpen = false;
+        }
+
         private void Menu_Tapped(object sender, TappedRoutedEventArgs e)
         {
             IsOpen = !IsOpen;
@@ -448,9 +475,7 @@ namespace UmiAoi.UWP.Controls
         protected override void OnDisconnectVisualChildren()
         {
             base.OnDisconnectVisualChildren();
-            Loaded -= CircleMenu_Loaded;
-            menu.Tapped -= Menu_Tapped;
-            storyboard.Completed -= Storyboard_Completed;
+            RemoveEvent();
         }
     }
 }

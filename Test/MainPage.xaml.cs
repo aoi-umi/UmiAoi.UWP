@@ -30,7 +30,7 @@ namespace Test
 
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
         {            
-            menu.Items.Remove(sender);            
+            //menu.Items.Remove(sender);            
             //menu.Items.Insert(new Random().Next(0, menu.Items.Count), sender);
         }
 
