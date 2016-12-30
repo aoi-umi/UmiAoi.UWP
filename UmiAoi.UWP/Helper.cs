@@ -10,6 +10,7 @@ using Windows.System.Profile;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Media;
 
 namespace UmiAoi.UWP
 {
@@ -27,6 +28,7 @@ namespace UmiAoi.UWP
         }
 
         private static ApplicationDataContainer LocalSettings = ApplicationData.Current.LocalSettings;
+
         public static void SettingSet(string key, object value)
         {
             LocalSettings.Values[key] = value;
@@ -77,6 +79,27 @@ namespace UmiAoi.UWP
                         return DeviceFamily.Desktop;
                 }
             }
+        }
+
+        public static DependencyObject GetParent(DependencyObject reference, Type targetType)
+        {
+            return GetParent(reference, targetType, 1);
+        }
+
+        public static DependencyObject GetParent(DependencyObject reference, Type targetType, int level)
+        {
+            if (level <= 0) return null;
+            var parent = VisualTreeHelper.GetParent(reference);
+            if (parent == null)
+                return parent;
+            else if(parent.GetType() == targetType)
+            {
+                if(level == 1)
+                    return parent;
+                else
+                    return GetParent(parent, targetType, level - 1);
+            }
+            return GetParent(parent, targetType, level);
         }
     }
 
