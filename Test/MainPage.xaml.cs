@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using UmiAoi.UWP;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -47,6 +48,11 @@ namespace Test
         {
             if(menu.Items.Count != 0)
             menu.Items.RemoveAt(new Random().Next(0, menu.Items.Count));
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Helper.ShowToastNotification(null, "提示", Notification.Reminder);
         }
     }
 }

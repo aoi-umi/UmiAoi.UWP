@@ -44,7 +44,7 @@
                     </Button>
                 </Canvas>
             </Border>
-            <Button HorizontalAlignment="Stretch">aaa</Button>
+            <Button HorizontalAlignment="Stretch" Click="Button_Click">toast</Button>
             <GridView>
                 <Button Content="add" Click="Add_Click">
                     <Interactivity:Interaction.Behaviors>
