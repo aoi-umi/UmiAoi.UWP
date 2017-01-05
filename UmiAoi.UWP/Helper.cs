@@ -152,7 +152,7 @@ namespace UmiAoi.UWP
         public DependencyProperty Property { get; set; }
         public Object Source { get; set; }
         public string Path { get; set; }
-        public BindingMode BindingMode { get; set; }
+        public BindingMode BindingMode { get; set; } = BindingMode.OneWay;
         public String ElementName { get; set; }
     }
 
