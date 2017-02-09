@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
+using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.AccessCache;
 using Windows.Storage.Pickers;
@@ -11,6 +12,7 @@ using Windows.System.Profile;
 using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 
@@ -144,6 +146,47 @@ namespace UmiAoi.UWP
             ToastNotification toast = new ToastNotification(toastXml);
             ToastNotificationManager.CreateToastNotifier().Show(toast);
         }
+
+        public static int GetStringAvailableIndex(MeasureFontRequest req)
+        {
+            var cloneReq = req.Clone();
+            var availableSize = req.AvailableSize.Width * req.AvailableSize.Height;
+            var maxCharNum = req.Input.Length;
+            //判断宽高是否为一个可读数
+            int availableSizeInt;
+            if (Int32.TryParse(availableSize.ToString(), out availableSizeInt))
+            {
+                //一个字符的宽高
+                cloneReq.Input = "A";
+                cloneReq.AvailableSize = new Size(Double.PositiveInfinity, Double.PositiveInfinity);
+                var charSize = MeasureStringSize(cloneReq);
+                maxCharNum = (int)(availableSize / charSize.Width / charSize.Height + req.AvailableSize.Width / charSize.Width);
+            }
+            cloneReq.Input = maxCharNum >= req.Input.Length ? req.Input : req.Input.Substring(0, maxCharNum);
+            cloneReq.AvailableSize = req.AvailableSize;
+            var size = MeasureStringSize(cloneReq);
+            if (size.Height > req.AvailableSize.Height)
+            {
+                if (cloneReq.Input.Length - 1 == 0) return 0;
+                cloneReq.Input = cloneReq.Input.Substring(0, cloneReq.Input.Length - 1);
+                return GetStringAvailableIndex(cloneReq);
+            }
+            else return cloneReq.Input.Length;
+        }
+
+        private static Size MeasureStringSize(MeasureFontRequest req)
+        {
+            TextBlock tb = new TextBlock();
+            tb.TextWrapping = TextWrapping.Wrap;
+            tb.Text = req.Input;
+            tb.FontFamily = req.FontFamily;
+            tb.FontSize = req.FontSize;
+            tb.Measure(req.AvailableSize);
+            Size actualSize = new Size();
+            actualSize.Width = tb.ActualWidth;
+            actualSize.Height = tb.ActualHeight;
+            return actualSize;
+        }
     }
 
     public class BindingModel
@@ -189,5 +232,30 @@ namespace UmiAoi.UWP
         Looping_Call8,
         Looping_Call9,
         Looping_Call10,
+    }
+
+    public class MeasureFontRequest
+    {
+        public string Input { get; set; }
+        public FontFamily FontFamily { get; set; }
+        public double FontSize { get; set; }
+        public Size AvailableSize { get; set; }
+        public MeasureFontRequest()
+        {
+            FontFamily = new FontFamily("Segoe UI");
+            AvailableSize = new Size(Double.PositiveInfinity, Double.PositiveInfinity);
+        }
+
+        public MeasureFontRequest Clone()
+        {
+            var clone = new MeasureFontRequest()
+            {
+                Input = Input,
+                FontFamily = FontFamily,
+                FontSize = FontSize,
+                AvailableSize = AvailableSize,
+            };
+            return clone;
+        }
     }
 }

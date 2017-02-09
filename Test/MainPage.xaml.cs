@@ -26,7 +26,13 @@ namespace Test
     {
         public MainPage()
         {
-            this.InitializeComponent(); 
+            this.InitializeComponent();
+            var testString = ""; 
+            for(var i = 0; i < 5;i++)
+            {
+                testString += "abcdefghijklmnopqrstuvtxyz0123456789";
+            }
+            FontMeasureInput.Text = testString + testString.ToUpper();
         }
 
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
@@ -53,6 +59,32 @@ namespace Test
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Helper.ShowToastNotification(null, "提示", Notification.Reminder);
+        }
+
+        private void FontMeasureInput_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            FontMeasureInput.TextChanged -= FontMeasureInput_TextChanged;
+
+            double maxHeight;
+            if (!Double.TryParse(MaxHeightBox.Text, out maxHeight)) maxHeight = 60;
+            var req = new MeasureFontRequest()
+            {
+                Input = FontMeasureInput.Text,
+                AvailableSize = new Size(b.ActualWidth, maxHeight),
+                FontFamily = FontMeasureInput.FontFamily,
+                FontSize = FontMeasureInput.FontSize,
+            };
+            var index1 = Helper.GetStringAvailableIndex(req);
+
+            FontMeasureOutput1.Text = FontMeasureInput.Text.Substring(0, index1);
+            if (index1 < FontMeasureInput.Text.Length)
+            {
+                req.Input = req.Input.Substring(index1);
+                var index2 = Helper.GetStringAvailableIndex(req);
+                FontMeasureOutput2.Text = FontMeasureInput.Text.Substring(index1, index2);
+            }
+            else FontMeasureOutput2.Text = "";
+            FontMeasureInput.TextChanged += FontMeasureInput_TextChanged;
         }
     }
 }
