@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     xmlns:local="using:UmiAoi.UWP.Controls">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="ms-appx:///UmiAoi.UWP/Themes/CircleMenuStyle.xaml"/>
+        <!--<ResourceDictionary Source="ms-appx:///UmiAoi.UWP/Themes/EllipseAppBarButtonStyle.xaml"/>-->
     </ResourceDictionary.MergedDictionaries>
     <Style TargetType="TextBlock" x:Key="MenuIcon">
         <Setter Property="FontSize" Value="12"/>

@@ -146,9 +146,10 @@ namespace UmiAoi.UWP
             ToastNotification toast = new ToastNotification(toastXml);
             ToastNotificationManager.CreateToastNotifier().Show(toast);
         }
-
+        
         public static int GetStringAvailableIndex(MeasureFontRequest req)
         {
+            if (string.IsNullOrEmpty(req.Input)) return -1;
             var cloneReq = req.Clone();
             var availableSize = req.AvailableSize.Width * req.AvailableSize.Height;
             var maxCharNum = req.Input.Length;
@@ -157,26 +158,34 @@ namespace UmiAoi.UWP
             if (Int32.TryParse(availableSize.ToString(), out availableSizeInt))
             {
                 //一个字符的宽高
-                cloneReq.Input = "A";
+                cloneReq.Input = "a";
                 cloneReq.AvailableSize = new Size(Double.PositiveInfinity, Double.PositiveInfinity);
                 var charSize = MeasureStringSize(cloneReq);
                 maxCharNum = (int)(availableSize / charSize.Width / charSize.Height + req.AvailableSize.Width / charSize.Width);
             }
-            cloneReq.Input = maxCharNum >= req.Input.Length ? req.Input : req.Input.Substring(0, maxCharNum);
+            if(req.IsNext)
+                cloneReq.Input = maxCharNum >= req.Input.Length ? req.Input : req.Input.Substring(0, maxCharNum);
+            else
+                cloneReq.Input = maxCharNum >= req.Input.Length ? req.Input : req.Input.Substring(req.Input.Length - maxCharNum, maxCharNum);
+
             cloneReq.AvailableSize = req.AvailableSize;
             var size = MeasureStringSize(cloneReq);
             if (size.Height > req.AvailableSize.Height)
             {
                 if (cloneReq.Input.Length - 1 == 0) return 0;
-                cloneReq.Input = cloneReq.Input.Substring(0, cloneReq.Input.Length - 1);
+                if(req.IsNext)
+                    cloneReq.Input = cloneReq.Input.Substring(0, cloneReq.Input.Length - 1);
+                else
+                    cloneReq.Input = cloneReq.Input.Substring(1, cloneReq.Input.Length - 1);
                 return GetStringAvailableIndex(cloneReq);
             }
             else return cloneReq.Input.Length;
         }
 
-        private static Size MeasureStringSize(MeasureFontRequest req)
+        public static Size MeasureStringSize(MeasureFontRequest req)
         {
-            TextBlock tb = new TextBlock();
+            var tb = new TextBlock();
+            tb.MaxLines = req.MaxLines;
             tb.TextWrapping = TextWrapping.Wrap;
             tb.Text = req.Input;
             tb.FontFamily = req.FontFamily;
@@ -236,12 +245,15 @@ namespace UmiAoi.UWP
 
     public class MeasureFontRequest
     {
+        public int MaxLines { get; set; }
         public string Input { get; set; }
         public FontFamily FontFamily { get; set; }
         public double FontSize { get; set; }
         public Size AvailableSize { get; set; }
+        public bool IsNext { get; set; }
         public MeasureFontRequest()
         {
+            FontSize = 15;
             FontFamily = new FontFamily("Segoe UI");
             AvailableSize = new Size(Double.PositiveInfinity, Double.PositiveInfinity);
         }
@@ -254,6 +266,7 @@ namespace UmiAoi.UWP
                 FontFamily = FontFamily,
                 FontSize = FontSize,
                 AvailableSize = AvailableSize,
+                IsNext = IsNext,
             };
             return clone;
         }
